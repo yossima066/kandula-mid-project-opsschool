@@ -10,12 +10,11 @@ kandula app from git, i create 2 pipelien: 1.build docker image and push to dock
                                            2. create deployment.yaml and loadbalncer.ymal and deploay to EKS
                                            
                                            
-# How it's work:
-Provisioning is done by terraform, installation on the Jenkins master and node.
-Once the Jenkins server is up, an SSH node is defined with credentials , Dockerhub and a git
-SSH key are required, aws credentials (you will have to configure aws credentials in 3 secrettext (aws_access_key_id, aws_secret_access_key , aws_default_region) ).
+# Kandula app:
 you need to clone this reop as contian kandula app:
 https://github.com/yossima066/kandula-project-app.git
+Kandula web-app, running on ELB LoadBalancer - using Flask listening on port 5000.
+
 
 
 # Requirements:
