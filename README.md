@@ -14,8 +14,7 @@ kandula app from git, i create 2 pipelien: 1.build docker image and push to dock
 Provisioning is done by terraform, as is the initial python installation on the Jenkins master and node.
 Once the Jenkins server is up, an SSH node is defined with credentialsת  Dockerhub credentials and a git
 SSH key are required, aws credentials (you will have to configure aws credentials in 3 secrettext (aws_access_key_id, aws_secret_access_key , aws_default_region) ).
-you need to clone this reop as contian 
-Jenkins pipeline that pulls a Jenkinsfile from the following repo can be created:
+you need to clone this reop as contian kandula app:
 https://github.com/yossima066/kandula-project-app.git
 
 
