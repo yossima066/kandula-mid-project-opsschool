@@ -1,0 +1,33 @@
+
+pipeline{
+    agent any
+    parameters {
+        choice(name: 'deploy', choices: ['enabled', 'disabled'], description: 'deploy docker?' )
+    }
+    stages{
+        stage("Deploy?"){
+            when {
+                expression { params.deploy == "enabled" }
+            }
+            stages{
+                stage("Git Clone"){
+                    steps{
+                        git branch: 'main', credentialsId: 'github-pat', url: 'https://github.com/yossima066/ci-cd'
+                    }
+                }
+                stage("Docker build&push"){
+                    steps{
+                        dir("assignments/session-3/DockerDir"){
+                            script{
+                                withDockerRegistry(credentialsId: 'dockerhub') {                                            // we give the image the same version as the .war package
+                                    def image = docker.build("mamany/opsschool-dh:latest")
+                                    image.push()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
