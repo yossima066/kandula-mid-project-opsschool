@@ -12,7 +12,9 @@ kandula app from git, i create 2 pipelien: 1.build docker image and push to dock
                                            
 # Kandula app:
 you need to clone this reop as contian kandula app:
+
 https://github.com/yossima066/kandula-project-app.git
+
 Kandula web-app, running on ELB LoadBalancer - using Flask listening on port 5000.
 
 
