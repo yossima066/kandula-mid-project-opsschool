@@ -33,6 +33,7 @@ You will need a machine with the following installed on it to run the enviroment
 
 
 
+
 ## To bring everything down:
 Terraform may have issues bringing the load balancer down. To avoid these issues you get bring it down yourself with `kubectl delete svc phonebook-lb` or by deleting the load balancer through the AWS console.  
 Once the load-balancer is down, cd into the terraform/global/VPC directory and run:  

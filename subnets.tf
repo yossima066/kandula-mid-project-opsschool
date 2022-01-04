@@ -1,7 +1,7 @@
 
 
 module "public_subnet_1" {
-  source                  = "\\modules\\subnet"
+  source                  = ".\\modules\\subnet"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
   vpc_id                  = module.main_vpc.aws_vpc_id
@@ -12,7 +12,7 @@ module "public_subnet_1" {
 }
 
 module "public_subnet_2" {
-  source                  = "\\modules\\subnet"
+  source                  = ".\\modules\\subnet"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1b"
   vpc_id                  = module.main_vpc.aws_vpc_id
@@ -23,7 +23,7 @@ module "public_subnet_2" {
 }
 
 module "private_subnet_1" {
-  source                  = "\\modules\\subnet"
+  source                  = ".\\modules\\subnet"
   map_public_ip_on_launch = false
   availability_zone       = "us-east-1a"
   vpc_id                  = module.main_vpc.aws_vpc_id
@@ -34,7 +34,7 @@ module "private_subnet_1" {
 }
 
 module "private_subnet_2" {
-  source                  = "\\modules\\subnet"
+  source                  = ".\\modules\\subnet"
   map_public_ip_on_launch = false
   availability_zone       = "us-east-1b"
   vpc_id                  = module.main_vpc.aws_vpc_id
