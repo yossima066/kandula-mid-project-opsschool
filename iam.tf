@@ -1,5 +1,5 @@
 module "nginx_role" {
-  source = "\\modules\\iam-role"
+  source = ".\\modules\\iam-role"
   name   = "nginx-role-s3"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -21,7 +21,7 @@ module "nginx_role" {
 }
 
 module "S3-put-access" {
-  source      = "\\modules\\iam-policy"
+  source      = ".\\modules\\iam-policy"
   name        = "s3-policy"
   description = "S3 put access policy"
   policy = jsonencode({
@@ -38,7 +38,7 @@ module "S3-put-access" {
 }
 
 module "nginx_instance_profile" {
-  source = "\\modules\\iam-instance-profile"
+  source = ".\\modules\\iam-instance-profile"
   name   = "nginx-profile"
   role   = module.nginx_role.role-name
 }

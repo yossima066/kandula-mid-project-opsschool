@@ -1,4 +1,4 @@
 module "eip" {
-  source = "\\modules\\eip"
+  source = ".\\modules\\eip"
 
 }

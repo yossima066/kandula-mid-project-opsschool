@@ -1,5 +1,5 @@
 module "lb" {
-  source             = "\\modules\\lb"
+  source             = ".\\modules\\lb"
   name               = "web-lb"
   internal           = false
   load_balancer_type = "application"

@@ -1,5 +1,5 @@
 module "nginx-sg" {
-  source      = "\\modules\\security-group"
+  source      = "./\\modules\\security-group"
   name        = "nginx-server-sg"
   description = "allow ssh,http"
   vpc_id      = module.main_vpc.aws_vpc_id
@@ -10,7 +10,7 @@ module "nginx-sg" {
   }
 }
 module "sg-rule-in-1" {
-  source            = "\\modules\\security-group-rule"
+  source            = "./\\modules\\security-group-rule"
   type              = "ingress"
   from_port         = 80
   to_port           = 80
@@ -20,7 +20,7 @@ module "sg-rule-in-1" {
 }
 
 module "sg-rule-in-2" {
-  source            = "\\modules\\security-group-rule"
+  source            = "./\\modules\\security-group-rule"
   type              = "ingress"
   from_port         = 22
   to_port           = 22
@@ -30,7 +30,7 @@ module "sg-rule-in-2" {
 }
 
 module "sg-rule-out" {
-  source            = "\\modules\\security-group-rule"
+  source            = "./\\modules\\security-group-rule"
   type              = "egress"
   from_port         = 0
   to_port           = 0
