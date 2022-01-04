@@ -33,7 +33,7 @@ You will need a machine with the following installed on it to run the enviroment
 
 
 # Jenkins:
-Access Jenkins master:<public-ip>:8080
+Access Jenkins master: "<public-ip>":8080
 
   
 # Consul:
