@@ -10,6 +10,7 @@ kandula app from git, i create 2 pipelien:
 
 
   1.build docker image and push to docker hub
+  
   2. create deployment.yaml and loadbalncer.ymal and deploay to EKS
                                            
                                            
