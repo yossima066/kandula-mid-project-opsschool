@@ -29,7 +29,7 @@ You will need a machine with the following installed on it to run the enviroment
 `terraform init`  
 `terraform validate`  
 `terraform plan -out midpro.tfplan`  
-`terraform apply "midpro.tfplan"
+`terraform apply "midpro.tfplan`
 
 
 
