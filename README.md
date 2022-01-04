@@ -6,9 +6,10 @@ Both Jenkins server and node are configured as Consul clients .
 The private subnets contain an EKS master and a worker group , one in each subnet, 
 and also three Consul servers.   
 Once the Jenkins is up and the required credentials are entered, you can configure a pipeline job to get the 
-
-kandula app from git, i create 2 pipelien: 1.build docker image and push to docker hub
-                                           2. create deployment.yaml and loadbalncer.ymal and deploay to EKS
+kandula app from git, i create 2 pipelien: 
+1.build docker image and push to docker hub
+                                           
+2. create deployment.yaml and loadbalncer.ymal and deploay to EKS
                                            
                                            
 # Kandula app:
