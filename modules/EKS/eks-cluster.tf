@@ -4,6 +4,13 @@ module "eks" {
   cluster_name    = local.cluster_name
   cluster_version = var.kubernetes_version
   subnets         = var.private_subnets
+  map_roles = [
+    {
+      rolearn  = "arn:aws:iam::461307513197:role/jekins-role"
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups   = ["system:masters", "system:bootstrappers", "system:nodes"]
+    }
+  ]
 
   enable_irsa = true
 
@@ -29,20 +36,6 @@ module "eks" {
       additional_userdata           = "echo foo bar"
       asg_desired_capacity          = 2
       additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
-    }
-  ]
-  map_users = [{
-    userarn  = module.jenkins.jenkins_arns
-    username = module.Jenkins.jenkins_nodes_ids
-    groups   = ["system:masters"]
-    }
-  ]
-
-  map_roles = [
-    {
-      rolearn  = module.main_vpc.aws_vpc_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups   = ["system:masters"]
     }
   ]
   manage_aws_auth = true
