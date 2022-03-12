@@ -94,6 +94,14 @@ resource "aws_security_group" "jenkins" {
   }
 
   ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
+    description = "Allow all inside security group"
+  }
+
+  ingress {
     from_port = 8500
     to_port   = 8500
     protocol  = "tcp"
@@ -127,11 +135,13 @@ resource "aws_security_group" "jenkins" {
 
 resource "aws_instance" "jenkins_server" {
   ami                  = data.aws_ami.jenkins_ami.id
+  count                = var.clients
   instance_type        = "t3.micro"
   subnet_id            = var.master_subnet
   key_name             = "jenkins_ec2_key"
   iam_instance_profile = aws_iam_instance_profile.jenkins-profile.name
-  user_data            = file("${path.module}/jenkinsserver.sh")
+  # user_data            = file("${path.module}/jenkinsserver.sh")
+  user_data = element(data.template_cloudinit_config.consul_client.*.rendered, count.index)
   tags = {
     Name = "Jenkins Server"
   }
@@ -144,14 +154,54 @@ resource "aws_instance" "jenkins_server" {
   vpc_security_group_ids = [
     var.default_sg,
     aws_security_group.jenkins.id
+
   ]
 }
 
+data "template_file" "consul_client" {
+  count    = var.clients
+  template = file("${path.module}/templates/consul.sh.tpl")
+
+  vars = {
+    consul_version        = var.consul_version
+    node_exporter_version = var.node_exporter_version
+    prometheus_dir        = var.prometheus_dir
+    config                = <<EOF
+       "node_name": "jenkins-${count.index + 1}",
+       "enable_script_checks": true,
+       "server": false
+      EOF
+  }
+}
+
+data "template_cloudinit_config" "consul_client" {
+  count = var.clients
+  part {
+    content = element(data.template_file.consul_client.*.rendered, count.index)
+
+  }
+  part {
+    content = element(data.template_file.webserver.*.rendered, count.index)
+  }
+}
+
+data "template_file" "webserver" {
+  count    = var.clients
+  template = file("${path.module}/templates/webserver.sh.tpl")
+
+  vars = {
+    apache_exporter_version = var.apache_exporter_version
+    prometheus_dir          = var.prometheus_dir
+
+  }
+}
+
 resource "aws_instance" "jenkins_agent" {
+  #ami                  = "ami-089f02765b2624c7b"
   ami                  = "ami-0275ae2b090744e24"
   instance_type        = "t3.micro"
   subnet_id            = var.agents_subnet
-  user_data            = file("${path.module}/jenkinsserver.sh")
+  user_data            = file("${path.module}/userdata.sh")
   key_name             = "jenkins_ec2_key"
   iam_instance_profile = aws_iam_instance_profile.jenkins-profile.name
 
@@ -162,6 +212,8 @@ resource "aws_instance" "jenkins_agent" {
 
   vpc_security_group_ids = [
     var.default_sg,
-    aws_security_group.jenkins.id
+    aws_security_group.jenkins.id,
+
   ]
 }
+

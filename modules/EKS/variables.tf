@@ -11,6 +11,7 @@ variable "aws_region" {
 locals {
   k8s_service_account_namespace = "default"
   k8s_service_account_name      = "opsschool-sa"
+  # jenkins_role = var.jenkins_role
 }
 
 
@@ -25,3 +26,6 @@ variable "private_subnets" {
 }
 
 
+# variable "jenkins_role" {
+  
+# }
