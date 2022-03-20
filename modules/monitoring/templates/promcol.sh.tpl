@@ -32,10 +32,26 @@ scrape_configs:
       - source_labels: ['__address__']
         target_label: '__address__'
         regex: '(.*):(.*)'
-        replacement: '$1:9100'
-    metrics_path: '/metrics'
+        replacement: '$1:8500'
+    metrics_path: '/v1/agent/metrics'
     params:
       format: ['prometheus']
+  - job_name: 'k8s-exporters'
+    consul_sd_configs:
+       - server: 'localhost:8500'
+         tags:
+          - k8s
+    relabel_configs:
+       - source_labels: ['__address__']
+         target_label: '__address__'
+         regex: '(.*):(.*)'
+         replacement: ':9100'
+       - source_labels: ['__meta_consul_node']
+         target_label: 'instance'
+       - source_labels: ['__meta_consul_tags']
+         target_label: 'tags'
+       - source_labels: ['__meta_consul_service']
+         target_label: 'service'
 EOF
 
 # Configure promcol service

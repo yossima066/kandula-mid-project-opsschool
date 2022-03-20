@@ -32,3 +32,7 @@ variable "vpc_id" {
 variable "aws_subnet_ids" {
   type = list(string)
 }
+
+variable "default_sg" {
+
+}

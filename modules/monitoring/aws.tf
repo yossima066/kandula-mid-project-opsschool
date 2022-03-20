@@ -74,6 +74,13 @@ resource "aws_security_group" "opsschool_consul" {
     description = "The Serf WAN port "
   }
   ingress {
+    from_port   = 9200
+    to_port     = 9200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "The Serf WAN port "
+  }
+  ingress {
     from_port   = 8300
     to_port     = 8300
     protocol    = "tcp"

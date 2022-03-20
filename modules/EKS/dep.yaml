@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kandula-deployment
+  labels:
+    app: kandula
+spec:
+  selector:
+    matchLabels:
+      app: kandula
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: kandula
+    spec:
+      serviceAccountName: kandula-sa
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - kandula
+              topologyKey: topology.kubernetes.io/hostname
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 10
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - kandula
+                topologyKey: topology.kubernetes.io/zone
+      containers:
+        - name: kandula
+          image: mamany/kandula:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: kandula-config
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"

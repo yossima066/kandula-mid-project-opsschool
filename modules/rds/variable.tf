@@ -38,3 +38,8 @@ variable "subnet_frontend" {
 
 
 }
+
+variable "vpc_id" {
+
+
+}

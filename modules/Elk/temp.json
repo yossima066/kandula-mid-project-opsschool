@@ -1,0 +1,19 @@
+{
+"services": [
+    {
+    "name": "elastic",
+    "tags": [
+        "server"
+    ],
+    "port": 9200,
+    "checks": [
+        {
+        "name": "HTTP health",
+        "tcp": "localhost:9200",
+        "interval": "5s",
+        "timeout": "10s"
+        }
+    ]
+    }
+]
+}

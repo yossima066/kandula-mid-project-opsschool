@@ -1,12 +1,46 @@
 #!/usr/bin/env bash
 set -e
 
+echo "rm -rf /etc/dnsmasq.d/10-consul"
+rm -rf /etc/dnsmasq.d/10-consul
+sleep 3
+echo "rm -rf /etc/systemd/resolved.conf"
+rm -rf /etc/systemd/resolved.conf
+sleep 3
+echo "rm -rf /usr/local/bin/consul"
+rm -rf /usr/local/bin/consul
+sleep 3
+echo "rm -rf /opt/consul"
+rm -rf /opt/consul
+sleep 3
+echo "deluser consul"
+deluser consul
+sleep 3
+echo "rm -rf /run/consul"
+rm -rf /run/consul
+sleep 3
+echo "rm -rf /etc/consul.d/config.json"
+rm -rf /etc/consul.d/config.json
+sleep 3
+echo "rm -rf /etc/systemd/system/consul.service"
+rm -rf /etc/systemd/system/consul.service
+sleep 3
+
+## install consul
+sleep 30
 echo "Grabbing IPs..."
 PRIVATE_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
+sleep 5
 echo "Installing dependencies..."
 apt-get -q update
+
+sleep 5
+
+echo "Installing dependencies..."
 apt-get -yq install unzip dnsmasq
+
+sleep 10
 
 echo "Configuring dnsmasq..."
 cat << EODMCF >/etc/dnsmasq.d/10-consul
@@ -14,29 +48,46 @@ cat << EODMCF >/etc/dnsmasq.d/10-consul
 server=/consul/127.0.0.1#8600
 EODMCF
 
+sleep 10
+echo "systemctl restart dnsmasq"
 systemctl restart dnsmasq
 
+sleep 10
+
+echo "/etc/systemd/resolved.conf"
 cat << EOF >/etc/systemd/resolved.conf
 [Resolve]
 DNS=127.0.0.1
 Domains=~consul
 EOF
+sleep 10
 
+echo "systemctl restart systemd-resolved.service"
 systemctl restart systemd-resolved.service
 
+sleep 10
 echo "Fetching Consul..."
 cd /tmp
-curl -sLo consul.zip https://releases.hashicorp.com/consul/${consul_version}/consul_${consul_version}_linux_amd64.zip
+curl -sLo consul.zip https://releases.hashicorp.com/consul/1.4.0/consul_1.4.0_linux_amd64.zip
+
+sleep 20
 
 echo "Installing Consul..."
 unzip consul.zip >/dev/null
 chmod +x consul
 mv consul /usr/local/bin/consul
+sleep 10
 
 # Setup Consul
+echo "mkdir"
 mkdir -p /opt/consul
+sleep 3
 mkdir -p /etc/consul.d
+sleep 3
 mkdir -p /run/consul
+sleep 6
+
+echo "tee /etc/consul.d/config.json"
 tee /etc/consul.d/config.json > /dev/null <<EOF
 {
   "advertise_addr": "$PRIVATE_IP",
@@ -47,17 +98,21 @@ tee /etc/consul.d/config.json > /dev/null <<EOF
   "disable_update_check": true,
   "leave_on_terminate": true,
   "retry_join": ["provider=aws tag_key=consul_server tag_value=true"],
-  ${config}
+  "node_name": "jenkins-server",
+  "enable_script_checks": true,
+  "server": false
 }
 EOF
-
+sleep 10
 # Create user & grant ownership of folders
+echo "useradd consul"
 useradd consul
 chown -R consul:consul /opt/consul /etc/consul.d /run/consul
 
-
+sleep 20
 # Configure consul service
-tee /etc/systemd/system/consul.service > /dev/null <<"EOF"
+echo "Configure consul service"
+tee /etc/systemd/system/consul.service > /dev/null <<EOF
 [Unit]
 Description=Consul service discovery agent
 Requires=network-online.target
@@ -78,17 +133,53 @@ TimeoutStopSec=5
 WantedBy=multi-user.target
 EOF
 
+sleep 20
+
 systemctl daemon-reload
 systemctl enable consul.service
 systemctl start consul.service
 
+sleep 25
+echo "elk json"
+tee /etc/consul.d/elk.json > /dev/null <<EOF
+{
+"services": [
+    {
+    "name":"jenkins-server",
+    "tags": [
+        "server"
+    ],
+    "port": 8080,
+    "checks": [
+        {
+        "name": "HTTP health",
+        "tcp": "localhost:8080",
+        "interval": "5s",
+        "timeout": "10s"
+        }
+    ]
+    }
+]
+}
+EOF
+
+sleep 10
+echo "systemctl reload consul"
+systemctl reload consul
 
 
+sleep 15
+
+sleep 15
+
+echo "Install Node Exporter"
 ### Install Node Exporter
-wget https://github.com/prometheus/node_exporter/releases/download/v${node_exporter_version}/node_exporter-${node_exporter_version}.linux-amd64.tar.gz -O /tmp/node_exporter.tgz
-mkdir -p ${prometheus_dir}
-tar zxf /tmp/node_exporter.tgz -C ${prometheus_dir}
+wget https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz -O /tmp/node_exporter.tgz
+mkdir -p /opt/prometheus
+tar zxf /tmp/node_exporter.tgz -C /opt/prometheus
 
+sleep 20
+echo "Configure node exporter service"
 # Configure node exporter service
 tee /etc/systemd/system/node_exporter.service > /dev/null <<EOF
 [Unit]
@@ -97,13 +188,14 @@ Requires=network-online.target
 After=network.target
 
 [Service]
-ExecStart=${prometheus_dir}/node_exporter-${node_exporter_version}.linux-amd64/node_exporter
+ExecStart=/opt/prometheus/node_exporter-0.18.1.linux-amd64/node_exporter
 KillSignal=SIGINT
 TimeoutStopSec=5
 
 [Install]
 WantedBy=multi-user.target
 EOF
+sleep 10
 
 systemctl daemon-reload
 systemctl enable node_exporter.service

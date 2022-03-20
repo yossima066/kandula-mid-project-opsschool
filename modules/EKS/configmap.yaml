@@ -22,7 +22,7 @@ data:
     consul {
      errors
      cache 30
-     forward . CONSULIP
+     forward . 
     }
 kind: ConfigMap
 metadata:

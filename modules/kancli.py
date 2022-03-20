@@ -47,7 +47,8 @@ def get_instances(ctx):
 
     for instance in instances_data:
         try:
-            if instance['State']['Name'] != "terminated" and instance['State']['Name'] != "shutting-down":                instance_data_dict = {}
+            if instance['State']['Name'] != "terminated" and instance['State']['Name'] != "shutting-down":                
+                instance_data_dict = {}
                 instance_data_dict['Cloud'] = 'aws'
                 instance_data_dict['Region'] = client('ec2').meta.region_name
                 instance_data_dict['Id'] = instance['InstanceId']
@@ -90,7 +91,7 @@ def stop_instances(ctx, instance_id):
         stop = click.confirm('Are you sure????')
         if stop:
             click.echo("hasta la vista {}".format(instance_id))
-            my_instances.stop_instances(InstanceIds=instance_id)
+            my_instances.stop_instances(InstanceIds=[instance_id])
         else:
             click.echo("instance not stopped, lucky")
     else:
@@ -111,7 +112,7 @@ def start_instances(ctx, instance_id):
         stop = click.confirm('Are you sure????')
         if stop:
             click.echo("starting instance {}".format(instance_id))
-            my_instances.start_instances(InstanceIds=instance_id)
+            my_instances.start_instances(InstanceIds=[instance_id])
         else:
             click.echo("aborted, instance not started")
     else:

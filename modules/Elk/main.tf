@@ -57,7 +57,8 @@ module "ec2-instance" {
   ami                         = data.aws_ami.ami.id
   key_name                    = var.ssh_key_name
   subnet_id                   = tolist(var.aws_subnet_ids)[0]
-  vpc_security_group_ids      = [module.security-group.this_security_group_id]
+  vpc_security_group_ids      = [module.security-group.this_security_group_id, var.default_sg]
+  iam_instance_profile        = aws_iam_instance_profile.elk-profile.name
   associate_public_ip_address = true
   user_data                   = file("${path.module}/userdata.sh")
 
@@ -66,3 +67,56 @@ module "ec2-instance" {
     Environment = "dev"
   }
 }
+
+
+resource "aws_iam_role" "elk-role" {
+  name = "elk-role"
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+  tags = {
+    Name = "elk-role"
+  }
+}
+resource "aws_iam_policy" "elk-policy" {
+  name = "elk-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:*",
+          "ec2:Describe*",
+          "sts:AssumeRole",
+          "eks:DescribeCluster",
+        "ec2:DescribeInstances"]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+
+  })
+}
+resource "aws_iam_role_policy_attachment" "elk-policy-role" {
+  role       = aws_iam_role.elk-role.name
+  policy_arn = aws_iam_policy.elk-policy.arn
+}
+resource "aws_iam_instance_profile" "elk-profile" {
+  name = "elk-profile"
+  role = aws_iam_role.elk-role.name
+}
+
+
+
