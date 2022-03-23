@@ -27,5 +27,10 @@ variable "private_subnets" {
 
 
 # variable "jenkins_role" {
-  
+
 # }
+
+variable "consul_security_group_id" {
+  description = "security group of consul"
+  type        = string
+}

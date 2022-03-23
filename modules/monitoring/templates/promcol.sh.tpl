@@ -32,8 +32,8 @@ scrape_configs:
       - source_labels: ['__address__']
         target_label: '__address__'
         regex: '(.*):(.*)'
-        replacement: '$1:8500'
-    metrics_path: '/v1/agent/metrics'
+        replacement: '$1:9100'
+    metrics_path: '/metrics'
     params:
       format: ['prometheus']
   - job_name: 'k8s-exporters'
@@ -109,3 +109,19 @@ sudo systemctl daemon-reload
 sudo systemctl enable grafana-server
 sudo systemctl start grafana-server
 
+tee /etc/grafana/provisioning/datasources/prometheus.yaml > /dev/null <<EOF
+apiVersion: 1
+datasources:
+  - name: Prometheus-EC2
+    type: prometheus
+    access: server
+    url: http://promcol.service.consul:9090
+    isDefault: true
+  - name: Prometheus-K8s
+    type: prometheus
+    access: proxy
+    url: http://prometheus-operated-default.service.consul:9090
+    isDefault: false
+EOF
+
+sudo systemctl start grafana-server

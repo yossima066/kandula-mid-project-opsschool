@@ -23,6 +23,7 @@ wget https://artifacts.elastic.co/downloads/kibana/kibana-oss-7.10.2-amd64.deb
 dpkg -i kibana-*.deb
 echo 'server.host: "0.0.0.0"' > /etc/kibana/kibana.yml
 echo "http.port: 9200" >> /etc/elasticsearch/elasticsearch.yml
+echo "discovery.type: single-node" >> /etc/elasticsearch/elasticsearch.yml
 systemctl enable kibana
 systemctl start kibana
 
