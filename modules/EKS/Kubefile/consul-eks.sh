@@ -17,6 +17,10 @@ helm repo update
 sleep 5
 helm install prometehusnew prometheus-community/kube-prometheus-stack
 
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability.yaml
+sleep 3
+kubectl apply -f hpa.yaml
+
 CONSULIP=$(kubectl get svc consul-consul-dns | tail -1 |awk '{ print $3 }')
 
 sed -i -e "s/CONSULIP/${CONSULIP}/g" configmap.yaml
@@ -24,3 +28,5 @@ sed -i -e "s/CONSULIP/${CONSULIP}/g" configmap.yaml
 kubectl apply -f configmap.yaml && \
 
 sed -i -e "s/${CONSULIP}/CONSULIP/g" configmap.yaml
+
+

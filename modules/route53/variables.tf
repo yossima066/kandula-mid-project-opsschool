@@ -27,3 +27,8 @@ variable "consul_client_ip" {
 variable "consul_servers_ip" {
 
 }
+
+
+variable "Postgres_servers_ip" {
+
+}

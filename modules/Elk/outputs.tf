@@ -4,3 +4,9 @@ output "public_ip" {
 output "kibana_url" {
   value = "http://${module.ec2-instance.public_ip[0]}:5601"
 }
+
+output "elk_server_id" {
+  value = module.ec2-instance.id[0]
+}
+
+

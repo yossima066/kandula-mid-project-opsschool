@@ -71,4 +71,11 @@ resource "aws_route53_record" "consul_client" {
 #   records = []
 # }
 
+resource "aws_route53_record" "Postgres" {
+  zone_id = aws_route53_zone.private.zone_id
+  name    = "Postgres.kandula"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [var.Postgres_servers_ip]
+}
 

@@ -18,3 +18,8 @@ output "servers_prv" {
 output "clients_prv" {
   value = aws_instance.consul_client.*.private_ip
 }
+
+
+output "prometheus_server_id" {
+  value = aws_instance.promcol.id
+}

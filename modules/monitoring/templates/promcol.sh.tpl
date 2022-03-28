@@ -52,6 +52,19 @@ scrape_configs:
          target_label: 'tags'
        - source_labels: ['__meta_consul_service']
          target_label: 'service'
+  - job_name: 'kandula-app'
+    metrics_path: '/metrics'
+    consul_sd_configs:
+      - server: 'localhost:8500'
+        services: 
+          - kandula-app-service-default
+    relabel_configs:
+      - source_labels: ['__address__']
+        target_label: '__address__'
+        regex: '(.*):(.*)'
+        replacement: '$1:9100'
+      - source_labels: ['__meta_consul_service_id']
+        target_label: 'pod'
 EOF
 
 # Configure promcol service

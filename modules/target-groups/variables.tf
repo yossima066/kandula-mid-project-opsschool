@@ -21,16 +21,28 @@ variable "target_type" {
 }
 
 variable "health_check_path" {
-  type    = string
-  default = "/"
+  type = string
+
 }
+# variable "health_check_path" {
+#   type    = string
+#   default = "/"
+# }
 
 variable "health_check_port" {
-  type    = number
-  default = 8500
+  type = number
+
 }
 
+# variable "health_check_port" {
+#   type    = number
+#   default = 8500
+# }
 variable "health_check_matcher" {
-  type    = number
-  default = 301
+  type = number
+
 }
+# variable "health_check_matcher" {
+#   type    = number
+#   default = 301
+# }

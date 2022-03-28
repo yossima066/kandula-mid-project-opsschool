@@ -200,3 +200,35 @@ sleep 10
 systemctl daemon-reload
 systemctl enable node_exporter.service
 systemctl start node_exporter.service
+
+
+
+sleep 50
+tee /home/ubuntu/external.json > /dev/null <<EOF
+{
+  "Node": "hashicorp",
+  "Address": "Postgres.kandula",
+  "NodeMeta": {
+    "external-node": "true",
+    "external-probe": "true"
+  },
+  "Service": {
+    "ID": "RDS",
+    "Service": "Postgres",
+    "Port": 5432
+  },
+  "Checks": [
+    {
+      "Name": "http-check",
+      "status": "passing",
+      "Definition": {
+        "http": "https://learn.hashicorp.com/consul/",
+        "interval": "30s"
+      }
+    }
+  ]
+}
+EOF
+sleep 3
+
+curl --request PUT --data @external.json localhost:8500/v1/catalog/register
